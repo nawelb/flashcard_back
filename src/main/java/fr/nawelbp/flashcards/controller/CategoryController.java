@@ -1,6 +1,6 @@
 package fr.nawelbp.flashcards.controller;
 
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.nawelbp.flashcards.model.Category;
-import fr.nawelbp.flashcards.model.Flashcard;
 import fr.nawelbp.flashcards.repository.CategoryRepository;
 
 @CrossOrigin("*")
@@ -29,7 +28,20 @@ public class CategoryController {
 	
 	@PostMapping(path="/newcategory")
 	public void createNewCategory(@RequestBody Category category){
-		categoryRepository.save(category);
+		
+		List<Category> allCategories=getAllCategories();
+		try {
+			List<Category> categoryName = categoryRepository.findAllByName(category.getName());
+			if (categoryName.isEmpty() || categoryName == null) {
+				Category cat= new Category(category.getName().toLowerCase());
+				categoryRepository.save(cat);
+			}
+	        else if (categoryName.size() == 1) 
+	        	System.out.println("Category already exist !");
+		} catch (NullPointerException e) {
+			System.out.println("all categ is empty");		}
+		
+        
 	}
 	
 	@GetMapping(path="/categories")
@@ -42,9 +54,11 @@ public class CategoryController {
 		return categoryRepository.findById(id);
 	}
 	
-	@GetMapping(path="/categories/{id}/flashcards")
-	public List<Flashcard>getAllFlashcardByCategory(@PathVariable Long id){
-		return getCategoryById(id).get().getFlashcards();
+	@GetMapping(path="/categories/name/{name}")
+	public Optional<Category> getCategoryByName(@PathVariable String name){
+		name= name.toLowerCase();
+		System.out.println("SPRING GET CATEGORY BY NAME");
+		return categoryRepository.findByName(name);
 	}
 	
 	@PutMapping(path="/categories/{id}")
@@ -54,14 +68,8 @@ public class CategoryController {
 	
 	@DeleteMapping(path="/categories/{id}")
 	public void deleteCategoryById(@PathVariable Long id) {
-		Optional<Category> category = getCategoryById(id);
-		List<Flashcard>flashcardList=new ArrayList();
-		flashcardList=category.get().getFlashcards();
-		if(flashcardList.isEmpty()) {
-			categoryRepository.deleteById(id);
-		}else {
-			System.out.println("Impossible de supprimer cette catégorie, car elle a des Flashcards associées !");
+				categoryRepository.deleteById(id);
 		}
-	}
+	
 	
 }

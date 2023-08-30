@@ -1,32 +1,40 @@
 package fr.nawelbp.flashcards.model;
 
-import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 @Table
 @Entity
 public class Category {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Id
-	Long id; 
+	Long categoryId; 
 	
 	String name; 
-	
-	@OneToMany @JoinColumn(name= "CATEGORY_ID")
-	List <Flashcard> flashcards;
+
+
+	public Category(String name) {
+		this.name = name;	}
+
+	public Category() {	}
+	public Category(Long categoryId, String name) {
+		super();
+		this.categoryId = categoryId;
+		this.name = name;
+	}
 
 	public Long getId() {
-		return id;
+		return categoryId;
 	}
 
 	public void setId(Long id) {
-		this.id = id;
+		this.categoryId = id;
 	}
 
 	public String getName() {
@@ -37,17 +45,10 @@ public class Category {
 		this.name = name;
 	}
 
-	public List<Flashcard> getFlashcards() {
-		return flashcards;
-	}
-
-	public void setFlashcards(List<Flashcard> flashcards) {
-		this.flashcards = flashcards;
-	}
 
 	@Override
 	public String toString() {
-		return "Category  :  id=" + id + ", name=" + name + ", flashcards=" + flashcards ;
+		return "Category  :  id=" + categoryId + ", name=" + name ;
 	}
 	
 	
